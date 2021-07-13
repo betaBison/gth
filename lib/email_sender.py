@@ -27,14 +27,15 @@ else:
 
 class EmailSender():
     def __init__(self,config,verbose=False):
-        """
-        Desc:
-            email sender initialization
-        Input(s):
-            config (configparser file) : configuration file
-            verbose (bool) : print verbose debugging statements
-        Output(s):
-            None
+        """email sender initialization
+
+        Parameters
+        ----------
+        config : configparser file
+            configuration file
+        verbose : bool
+            print verbose debugging statements
+
         """
         self.verbose = verbose
         self.receiver = config["emailsender"]["receiver"]
@@ -51,17 +52,12 @@ class EmailSender():
         self.service = self.build_service()
 
     def run(self):
-        """
-        Desc:
-            main run function for the email sender
-        Input(s):
-            None
-        Output(s):
-            None
+        """main run function for the email sender
+
         """
         if self.verbose:
             print("beginning email sender...")
-            
+
         # get all current analytics folders
         an_dirs = [content for content in os.listdir(self.an_path)
                    if os.path.isdir(os.path.join(self.an_path,content))]
@@ -100,14 +96,16 @@ class EmailSender():
             print("...finished email sender. email message sent")
 
     def build_service(self):
-        """
-        Desc:
-            builds gmail api service. Code copied with minor edits from
-            https://developers.google.com/gmail/api/quickstart/python
-        Input(s):
-            None
-        Output(s):
-            service (gmail api) : gmail api service
+        """builds gmail api service.
+
+        Code copied with minor edits from
+        https://developers.google.com/gmail/api/quickstart/python
+
+        Returns
+        -------
+        service : gmail api
+            gmail api service
+
         """
 
         # only need the scope to send emails
@@ -141,15 +139,17 @@ class EmailSender():
         return service
 
     def build_html_message(self):
-        """
-        Desc:
-            create the bulk of the html message by combing lots of
-            strings together that include tracked analytics and plots
-            that were created
-        Input(s):
-            None
-        Output(s):
-            msg (string) : long string that contains the html message
+        """Build HTML message
+
+        create the bulk of the html message by combing lots of strings
+        together that include tracked analytics and plots that were
+        created
+
+        Returns
+        -------
+        msg : string
+            long string that contains the html message
+
         """
         # read in the analytics text data
         with open(self.an_dir + "/" + self.date_cur + ".json") as f:
@@ -250,14 +250,11 @@ class EmailSender():
         return msg
 
     def prep_attachments(self):
-        """
-        Desc:
-            call the plotter function and correlate figure names with
-            the figures that were created
-        Input(s):
-            None
-        Output(s):
-            None
+        """Prepare attachements.
+
+        call the plotter function and correlate figure names with
+        the figures that were created
+
         """
         self.fig_paths = libplotter.create_email_plots(self.date_cur,
                                                        self.date_prev)
@@ -266,16 +263,23 @@ class EmailSender():
                           "views_history"]
 
     def create_mixed_message(self, message_html):
-        """
-        Desc:
-            Create a message for an email. Copied with edits from
-            https://developers.google.com/gmail/api/guides/sending
-            Also see this answer for how to add attachments
-            https://stackoverflow.com/questions/1633109/
-        Input(s):
-            message_html (string) : html text message to be sent
-        Output(s):
-            msg_object (base64url encoded email object) : email object
+        """Create a message for an email.
+
+        Copied with edits from
+        https://developers.google.com/gmail/api/guides/sending
+        Also see this answer for how to add attachments
+        https://stackoverflow.com/questions/1633109/
+
+        Parameters
+        ----------
+        message_html : string
+            html text message to be sent
+
+        Returns
+        -------
+        msg_object : base64url encoded email object
+            email object
+
         """
 
         # update the receiver and the subject
@@ -316,17 +320,26 @@ class EmailSender():
             message.as_string().encode("utf-8")).decode("utf-8")}
 
     def send_message(self, service, user_id, message):
-        """
-        Desc:
-            Send an email message. Copied with minor edits from
-            https://developers.google.com/gmail/api/guides/sending
-        Input(s):
-            service (Gmail API service instance) : Authorized Gmail API
-            user_id (string) : User's email address. The special value
-                of "me" can be used to indicate the authenticated user.
-            message (string) : Message to be sent.
-        Output(s):
-            message (message object) : the sent message
+        """Send an email message.
+
+        Copied with minor edits from
+        https://developers.google.com/gmail/api/guides/sending
+
+        Parameters
+        ----------
+
+        service : Gmail API service instance
+            Authorized Gmail API
+        user_id : string
+            User's email address. The special value
+            of "me" can be used to indicate the authenticated user.
+        message : string
+            Message to be sent.
+
+        Returns
+        -------
+        message : message object
+            the sent message
         """
 
         try:

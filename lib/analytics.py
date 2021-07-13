@@ -19,13 +19,13 @@ else:
 
 class Analytics():
     def __init__(self,verbose=False):
-        """
-        Desc:
-            analytics initialization
-        Input(s):
-            verbose (bool) : print verbose debugging statements
-        Output(s):
-            None
+        """analytics initialization
+
+        Parameters
+        ----------
+        verbose : bool
+            print verbose debugging statements
+
         """
         self.verbose = verbose      # printing for debugging
 
@@ -37,13 +37,8 @@ class Analytics():
         self.prev_exists = False    # exists a previous log to compare
 
     def run(self):
-        """
-        Desc:
-            main run function for analytics
-        Input(s):
-            None
-        Output(s):
-            None
+        """main run function for analytics
+
         """
 
         if self.verbose:
@@ -91,15 +86,17 @@ class Analytics():
             print("...finished analytics")
 
     def check_dirs(self):
-        """
-        Desc:
-            create log directories if they don't yet exist and check
-            which raw logs need to be analyzed.
-        Input(s):
-            None
-        Output(s):
-            analytics_needed (list) : the raw logs that do not yet have
-                a corresponding analytics directory
+        """check and create directories
+
+        create log directories if they don't yet exist and check
+        which raw logs need to be analyzed.
+
+        Returns
+        -------
+        analytics_needed : list
+            the raw logs that do not yet have a corresponding analytics
+            directory
+
         """
 
         raw_dir = self.log_dir + "raw/"
@@ -166,26 +163,16 @@ class Analytics():
         return analytics_needed
 
     def load_log(self):
-        """
-        Desc:
-            load_log file into dataframe
-        Input(s):
-            None
-        Output(s):
-            None
+        """load_log file into dataframe
+
         """
         raw_dir = self.log_dir + "raw/"
 
         self.log_df = pd.read_csv(raw_dir + self.raw_log_current)
 
     def create_repo_dirs(self):
-        """
-        Desc:
-            create log directories if they don't yet exist
-        Input(s):
-            None
-        Output(s):
-            None
+        """create log directories if they don't yet exist
+
         """
         repos_dir = self.log_dir + "repos/"
 
@@ -208,13 +195,8 @@ class Analytics():
                     sys.exit(1)
 
     def sort_raw_data(self):
-        """
-        Desc:
-            sort through each of the main metrics for each repository
-        Input(s):
-            None
-        Output(s):
-            None
+        """Sort through each of the main metrics for each repository
+
         """
 
         # iterate over repository indexes
@@ -233,16 +215,18 @@ class Analytics():
             self.update_daily_metric(ri,"views_uniques_daily")
 
     def update_nondaily_metric(self,ri,col_name):
-        """
-        Desc:
-            update metrics that are not daily, this function simply
-            appends the newest value to the log file
-        Input(s):
-            ri (int) : row of dataframe to read from
-            col_name (string) : column name and thus file name for the
-                specific metric
-        Output(s):
-            None
+        """update nondaily metrics
+
+        update metrics that are not daily, this function simply
+        appends the newest value to the log file
+
+        Parameters
+        ----------
+        ri : int
+            row of dataframe to read from
+        col_name : string
+            column name and thus file name for the specific metric
+
         """
         repos_dir = self.log_dir + "repos/"
         repo_dir = repos_dir + self.full2dir(self.log_df["repo"][ri])
@@ -259,16 +243,18 @@ class Analytics():
         f.close()
 
     def update_daily_metric(self,ri,col_name):
-        """
-        Desc:
-            update metrics that are daily, this function reads through
-            the old data and only adds new daily values
-        Input(s):
-            ri (int) : row of dataframe to read from
-            col_name (string) : column name and thus file name for the
-                specific metric
-        Output(s):
-            None
+        """update metrics that are daily
+
+        this function reads through
+        the old data and only adds new daily values
+
+        Parameters
+        ----------
+        ri : int
+            row of dataframe to read from
+        col_name : string
+            column name and thus file name for the specific metric
+
         """
         repos_dir = self.log_dir + "repos/"
         repo_dir = repos_dir + self.full2dir(self.log_df["repo"][ri])
@@ -297,13 +283,18 @@ class Analytics():
         f.close()
 
     def full2dir(self,fullname):
-        """
-        Desc:
-            changes full repository name into a directory name
-        Input(s):
-            fullname (string) : full repository name
-        Output(s):
-            dirname (string) : new directory name
+        """changes full repository name into a directory name
+
+        Parameters
+        ----------
+        fullname : string
+            full repository name
+
+        Returns
+        -------
+        dirname : string
+            new directory name
+
         """
 
         # remove forward slash
@@ -318,14 +309,11 @@ class Analytics():
         return dirname
 
     def check_tracking_change(self):
-        """
-        Desc:
-            checks which repositories are beginning to be tracked or
-            have stopped being tracked.
-        Input(s):
-            None
-        Output(s):
-            None
+        """check tracked repositories
+
+        checks which repositories are beginning to be tracked or have
+        stopped being tracked.
+
         """
         if self.prev_exists:
             # add repos no longer tracked to the list
@@ -347,14 +335,11 @@ class Analytics():
             print("ended tracking:\n",self.ended_tracking)
 
     def check_stars_change(self):
-        """
-        Desc:
-            checks whether the stars count has changed and appends any
-            changes to self.stars_change
-        Input(s):
-            None
-        Output(s):
-            None
+        """Checks start counts
+
+        checks whether the stars count has changed and appends any
+        changes to self.stars_change
+
         """
 
         # iterate over repositories
@@ -372,14 +357,11 @@ class Analytics():
                 print(change[0],": ",change[1])
 
     def check_forks_change(self):
-        """
-        Desc:
-            checks whether the forks count has changed and appends any
-            changes to self.forks_change
-        Input(s):
-            None
-        Output(s):
-            None
+        """Checks forks counts
+
+        checks whether the forks count has changed and appends any
+        changes to self.forks_change
+
         """
 
         # iterate over repositories
@@ -397,13 +379,8 @@ class Analytics():
                 print(change[0],": ",change[1])
 
     def log_analytics(self):
-        """
-        Desc:
-            logs the analytics to a json file
-        Input(s):
-            None
-        Output(s):
-            None
+        """Logs the analytics to a json file
+
         """
         an_dir = self.log_dir + "analytics/" + self.raw_log_current[:-4] + "/"
 
