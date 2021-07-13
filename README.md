@@ -1,5 +1,8 @@
 # GTH: GitHub Traffic History
 
+[![Documentation Status](https://readthedocs.org/projects/gth/badge/?version=latest)](https://gth.readthedocs.io/en/latest/?badge=latest)
+
+
 This project logs traffic history data for your GitHub repositories and can optionally parse through the data to gain useful insights, plot the data, and send automatic emails with recent trends. This project was inspired by a desire to save long-term traffic history of GitHub repositories to look for patterns that extend beyond the last 14 days (all you can currently see from a respository's Insights page).
 
 This project is broken down into several modules: requesting the traffic data, analyzing the logged traffic data, plotting the logged data, and automatically sending an email with recent history stats. These modules can be run independently. See the [Run Instructions](#run-instructions) section for more information on this project's intended modularity.
