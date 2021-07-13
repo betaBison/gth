@@ -4,3 +4,4 @@ config/settings.ini
 config/credentials.json
 config/email_token.pickle
 log/*
+build/
