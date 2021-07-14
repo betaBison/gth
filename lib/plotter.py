@@ -26,13 +26,13 @@ repos_dir = log_dir + "repos/"
 an_dir = log_dir + "analytics/"
 
 def create_plots(verbose=False):
-    """
-    Desc:
-        create a bunch of plots as desired
-    Input(s):
-        verbose (bool) : print verbose debugging statements
-    Output(s):
-        None
+    """create a bunch of plots as desired
+
+    Parameters
+    ----------
+    verbose : bool
+        print verbose debugging statements
+
     """
     # the number of repos that should be included. None means that all
     # repositories will be included in the graph data (except for those
@@ -62,15 +62,21 @@ def create_plots(verbose=False):
         print("...finished creating plots")
 
 def create_email_plots(date_cur, date_prev = None):
-    """
-    Desc:
-        create and save some plots for use in an email
-    Input(s):
-        date_cur (string: YYYY-MM-DD) : date of current analytics file
-        date_prev (string: YYYY-MM-DD) : date of previous analytics file
-    Output(s):
-        fig_paths (list : [string,string,...]) : list of strings of the
-            location of where each figure is saved
+    """create and save some plots for use in an email
+
+    Parameters
+    ----------
+    date_cur : string
+        YYYY-MM-DD, date of current analytics file
+    date_prev : string
+        YYYY-MM-DD, date of previous analytics file
+
+    Returns
+    -------
+    fig_paths : list
+        [string,string,...]) : list of strings of the
+        location of where each figure is saved
+
     """
     # the number of repos that should be included. None means that all
     # repositories will be included in the graph data (except for those
@@ -118,15 +124,17 @@ def create_email_plots(date_cur, date_prev = None):
     return fig_paths
 
 def update_repo_plots(verbose=False):
-    """
-    Desc:
-        update all repo plots. This function in particular takes a long
-        amount of time. You can not call this function if for some
-        reason you need to run this code faster
-    Input(s):
-        verbose (bool) : print verbose debugging statements
-    Output(s):
-        None
+    """update all repo plots.
+
+    This function in particular takes a long
+    amount of time. You could not call this function if for some
+    reason you need to run this code faster
+
+    Parameters
+    ----------
+    verbose : bool
+        print verbose debugging statements
+
     """
     # get all repository directories
     repos_dirs = [content for content in os.listdir(repos_dir)
@@ -152,17 +160,19 @@ def update_repo_plots(verbose=False):
         plot_repo_metric(repo_dir,"stars","daily")
 
 def plot_repo_metric(repo_dir,metric_name,type):
-    """
-    Desc:
-        plots individual repository metrics and saves the plots
-    Input(s):
-        repo_dir (string) : filepath to the repository logs
-        metric_name (string) : name for metric and column name
-        type (string) : either "cumsum" or "daily". "cumsum" will plot
-            the cumulative sum of the column over time while "daily"
-            will plot the daily change over time
-    Output(s):
-        None
+    """plots individual repository metrics and saves the plots
+
+    Parameters
+    ----------
+    repo_dir : string
+        filepath to the repository logs
+    metric_name : string
+        name for metric and column name
+    type : string
+        either "cumsum" or "daily". "cumsum" will plot
+        the cumulative sum of the column over time while "daily"
+        will plot the daily change over time
+
     """
 
     # read in the metric data
@@ -219,23 +229,33 @@ def plot_repo_metric(repo_dir,metric_name,type):
 
 def plot_daily_metrics(col_name, type = "daily",
                        top_num = None, date_filter = None):
-    """
-    Desc:
-        plot and daily metrics. The plots get saved to default location
-        if there is no date filter implmented
-    Input(s):
-        col_name (string) : name for filename and column name
-        type (string) : either "cumsum" or "daily". "cumsum" will plot
-            the cumulative sum of the column over time while "daily"
-            will plot the daily change over time
-        top_num (int) : number of top repositories (according to
-            cumulative sum) to show in the graph. Repos with a
-            cumulative value of 0 will still not be plotted
-        date_filter (string : "YYYY-MM-DD") : all data after this date
-            (inclusive) will be plotted. None means all data will be
-            plotted
-    Output(s):
-        fig (matplotlib figure) : new figure
+    """plot and daily metrics.
+
+    The plots get saved to default location if there is no date filter
+    implmented
+
+    Parameters
+    ----------
+    col_name : string
+        name for filename and column name
+    type : string
+        either "cumsum" or "daily". "cumsum" will plot
+        the cumulative sum of the column over time while "daily"
+        will plot the daily change over time
+    top_num : int
+        number of top repositories (according to
+        cumulative sum) to show in the graph. Repos with a
+        cumulative value of 0 will still not be plotted
+    date_filter : string
+        "YYYY-MM-DD", all data after this date
+        (inclusive) will be plotted. None means all data will be
+        plotted
+
+    Returns
+    -------
+    fig : matplotlib figure
+        new figure
+
     """
 
     # set up figure and size it
@@ -368,14 +388,15 @@ def plot_daily_metrics(col_name, type = "daily",
     return fig
 
 def save_and_close(fig,plt_file):
-    """
-    Desc:
-        saves and closes the figure
-    Input(s):
-        fig (matplotlib fig) : figure object
-        plt_file (string) : filepath for the figure
-    Output(s):
-        None
+    """saves and closes the figure
+
+    Parameters
+    ----------
+    fig : matplotlib fig
+        figure object
+    plt_file : string
+        filepath for the figure
+
     """
 
     fig.savefig(plt_file,

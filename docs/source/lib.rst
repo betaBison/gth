@@ -1,45 +1,35 @@
-lib package
-===========
+Modules Documentation
+=====================
 
-Submodules
-----------
-
-lib.analytics module
---------------------
-
-.. automodule:: lib.analytics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-lib.email\_sender module
+Traffic Requester Module
 ------------------------
-
-.. automodule:: lib.email_sender
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-lib.plotter module
-------------------
-
-.. automodule:: lib.plotter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-lib.traffic\_requester module
------------------------------
 
 .. automodule:: lib.traffic_requester
    :members:
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+Analytics Module
+----------------
 
-.. automodule:: lib
+.. automodule:: lib.analytics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Plotter Module
+--------------
+
+.. automodule:: lib.plotter
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+Email Sender Module
+-------------------
+
+.. automodule:: lib.email_sender
    :members:
    :undoc-members:
    :show-inheritance:

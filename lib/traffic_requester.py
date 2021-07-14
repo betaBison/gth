@@ -14,14 +14,15 @@ from github import Github
 
 class TrafficRequester():
     def __init__(self,config,verbose=False):
-        """
-        Desc:
-            traffic requester initialization
-        Input(s):
-            config (configparser file) : configuration file
-            verbose (bool) : print verbose debugging statements
-        Output(s):
-            None
+        """traffic requester initialization
+        
+        Parameters
+        ----------
+        config : configparser file
+            configuration file
+        verbose : bool
+            print verbose debugging statements
+
         """
 
         self.verbose = verbose              # lots of print statements
@@ -45,13 +46,8 @@ class TrafficRequester():
 
 
     def run(self):
-        """
-        Desc:
-            main run function for traffic requester
-        Input(s):
-            None
-        Output(s):
-            None
+        """main run function for traffic requester
+
         """
 
         if self.verbose:
@@ -74,15 +70,12 @@ class TrafficRequester():
             print("...finished traffic requester")
 
     def get_repositories(self):
-        """
-        Desc:
-            checks which repositories are owned by the user or to which
-            the user has contributed. Adds all of these repo names to
-            the dataframe.
-        Input(s):
-            None
-        Output(s):
-            None
+        """api request for repositories
+
+        checks which repositories are owned by the user or to which
+        the user has contributed. Adds all of these repo names to
+        the dataframe.
+
         """
         repo_names = []
 
@@ -106,14 +99,10 @@ class TrafficRequester():
             print("found ",contributor_count, "contributor repositories")
 
     def get_history(self):
-        """
-        Desc:
-            requests traffic history for each repository and adds all
-            information to the dataframe
-        Input(s):
-            None
-        Output(s):
-            None
+        """requests traffic history for each repository
+
+        Then adds all information to the dataframe
+
         """
         stargazers = []
         forks = []
@@ -191,13 +180,8 @@ class TrafficRequester():
         self.df["content_top_10"] = content_top_10
 
     def log_data(self):
-        """
-        Desc:
-            save raw data to log file
-        Input(s):
-            None
-        Output(s):
-            None
+        """save raw data to log file
+
         """
         # funky method but it works regardless of whether you're running
         # this file or the main.py file
