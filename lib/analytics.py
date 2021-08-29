@@ -52,35 +52,40 @@ class Analytics():
 
         # check directories and create if necessary
         analytics_needed = self.check_dirs()
+        if len(analytics_needed) > 0:
+            for raw_log in analytics_needed:
+                if self.verbose:
+                    print("analyzing raw log ",raw_log)
 
-        for raw_log in analytics_needed:
+                # update current log being analyzed
+                self.raw_log_current = raw_log
+
+                # load log into dataframe
+                self.load_log()
+
+                # read in raw log to df and create repo dirs
+                self.create_repo_dirs()
+
+                # sort the raw data from the latest
+                self.sort_raw_data()
+
+            # check tracking changes
+            self.check_tracking_change()
+
+            if self.prev_exists:
+                # update stars and forks
+                self.check_stars_change()
+                self.check_forks_change()
+
+            # log raw data
             if self.verbose:
-                print("analyzing raw log ",raw_log)
+                print("logging analytics")
+            self.log_analytics()
 
-            # update current log being analyzed
-            self.raw_log_current = raw_log
-
-            # load log into dataframe
-            self.load_log()
-
-            # read in raw log to df and create repo dirs
-            self.create_repo_dirs()
-
-            # sort the raw data from the latest
-            self.sort_raw_data()
-
-        # check tracking changes
-        self.check_tracking_change()
-
-        if self.prev_exists:
-            # update stars and forks
-            self.check_stars_change()
-            self.check_forks_change()
-
-        # log raw data
-        if self.verbose:
-            print("logging analytics")
-        self.log_analytics()
+        # analytics_needed was empty
+        else:
+            if self.verbose:
+                print("no analytics needed...")
 
         if self.verbose:
             print("...finished analytics")
