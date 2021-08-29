@@ -274,6 +274,12 @@ def plot_daily_metrics(col_name, type = "daily",
 
             # filter by date
             if date_filter != None:
+                filter_date = datetime.datetime.strptime(date_filter,"%Y-%m-%d").date()
+                last_date = datetime.datetime.strptime(repo_df["date"].values[-1],"%Y-%m-%d").date()
+                # continue if there's no relevant data
+                if (last_date < filter_date):
+                    continue
+
                 filter_index = repo_df.index[repo_df["date"] == date_filter].tolist()
                 if len(filter_index) == 0:
                     print("no matching data for date filter")
@@ -307,6 +313,12 @@ def plot_daily_metrics(col_name, type = "daily",
 
             # filter by date
             if date_filter != None:
+                filter_date = datetime.datetime.strptime(date_filter,"%Y-%m-%d").date()
+                last_date = datetime.datetime.strptime(repo_df["date"].values[-1],"%Y-%m-%d").date()
+                # continue if there's no relevant data
+                if (last_date < filter_date):
+                    continue
+
                 filter_index = repo_df.index[repo_df["date"] == date_filter].tolist()
                 if len(filter_index) == 0:
                     print("no matching data for date filter")
