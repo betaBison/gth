@@ -7,6 +7,7 @@
 
 import os
 import sys
+import time
 import datetime
 import configparser
 import pandas as pd
@@ -15,7 +16,7 @@ from github import Github
 class TrafficRequester():
     def __init__(self,config,verbose=False):
         """traffic requester initialization
-        
+
         Parameters
         ----------
         config : configparser file
@@ -142,29 +143,42 @@ class TrafficRequester():
             if self.verbose:
                 print("requesting data for repository ",
                        rr+1,"/",len(self.repo_objects))
-            # append stars and forks
-            stargazers.append(repo.stargazers_count)
-            forks.append(repo.forks_count)
 
-            # append clones data
-            clones_2weeks.append(repo.get_clones_traffic()["count"])
-            clones_uniques_2weeks.append(repo.get_clones_traffic()["uniques"])
-            for clone in repo.get_clones_traffic()["clones"]:
-                if clone.timestamp.date() in last_dates:
-                    clones_daily[rr][str(clone.timestamp.date())] = clone.count
-                    clones_uniques_daily[rr][str(clone.timestamp.date())] = clone.uniques
+            data_obtained = False
 
-            # append views data
-            views_2weeks.append(repo.get_views_traffic()["count"])
-            views_uniques_2weeks.append(repo.get_views_traffic()["uniques"])
-            for view in repo.get_views_traffic()["views"]:
-                if view.timestamp.date() in last_dates:
-                    views_daily[rr][str(view.timestamp.date())] = view.count
-                    views_uniques_daily[rr][str(view.timestamp.date())] = view.uniques
+            while not data_obtained:
+                try:
 
-            # append referrers and top paths
-            referrers_top_10.append(repo.get_top_referrers())
-            content_top_10.append(repo.get_top_paths())
+                    # append stars and forks
+                    stargazers.append(repo.stargazers_count)
+                    forks.append(repo.forks_count)
+
+                    # append clones data
+                    clones_2weeks.append(repo.get_clones_traffic()["count"])
+                    clones_uniques_2weeks.append(repo.get_clones_traffic()["uniques"])
+                    for clone in repo.get_clones_traffic()["clones"]:
+                        if clone.timestamp.date() in last_dates:
+                            clones_daily[rr][str(clone.timestamp.date())] = clone.count
+                            clones_uniques_daily[rr][str(clone.timestamp.date())] = clone.uniques
+
+                    # append views data
+                    views_2weeks.append(repo.get_views_traffic()["count"])
+                    views_uniques_2weeks.append(repo.get_views_traffic()["uniques"])
+                    for view in repo.get_views_traffic()["views"]:
+                        if view.timestamp.date() in last_dates:
+                            views_daily[rr][str(view.timestamp.date())] = view.count
+                            views_uniques_daily[rr][str(view.timestamp.date())] = view.uniques
+
+                    # append referrers and top paths
+                    referrers_top_10.append(repo.get_top_referrers())
+                    content_top_10.append(repo.get_top_paths())
+                    hi
+                    data_obtained = True
+                except Exception as e:
+                    print(e)
+                    time.sleep(0.1)
+                    print("attempting retry for",repo.full_name)
+
 
         self.df["stars"] = stargazers
         self.df["forks"] = forks
