@@ -172,7 +172,6 @@ class TrafficRequester():
                     # append referrers and top paths
                     referrers_top_10.append(repo.get_top_referrers())
                     content_top_10.append(repo.get_top_paths())
-                    hi
                     data_obtained = True
                 except Exception as e:
                     print(e)
