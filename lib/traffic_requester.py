@@ -148,35 +148,55 @@ class TrafficRequester():
 
             while not data_obtained:
                 try:
-
                     # append stars and forks
-                    stargazers.append(repo.stargazers_count)
-                    forks.append(repo.forks_count)
+                    stargazers_count = repo.stargazers_count
+                    forks_count = repo.forks_count
 
                     # append clones data
-                    clones_2weeks.append(repo.get_clones_traffic()["count"])
-                    clones_uniques_2weeks.append(repo.get_clones_traffic()["uniques"])
-                    for clone in repo.get_clones_traffic()["clones"]:
-                        if clone.timestamp.date() in last_dates:
-                            clones_daily[rr][str(clone.timestamp.date())] = clone.count
-                            clones_uniques_daily[rr][str(clone.timestamp.date())] = clone.uniques
+                    clones_2weeks_data = repo.get_clones_traffic()["count"]
+                    clones_uniques_2weeks_data = repo.get_clones_traffic()["uniques"]
+                    clone_data = repo.get_clones_traffic()["clones"]
+
 
                     # append views data
-                    views_2weeks.append(repo.get_views_traffic()["count"])
-                    views_uniques_2weeks.append(repo.get_views_traffic()["uniques"])
-                    for view in repo.get_views_traffic()["views"]:
-                        if view.timestamp.date() in last_dates:
-                            views_daily[rr][str(view.timestamp.date())] = view.count
-                            views_uniques_daily[rr][str(view.timestamp.date())] = view.uniques
+                    views_2weeks_data = repo.get_views_traffic()["count"]
+                    views_uniques_2weeks_data = repo.get_views_traffic()["uniques"]
+                    view_data = repo.get_views_traffic()["views"]
 
                     # append referrers and top paths
-                    referrers_top_10.append(repo.get_top_referrers())
-                    content_top_10.append(repo.get_top_paths())
+                    referrers_top_10_data = repo.get_top_referrers()
+                    content_top_10_data = repo.get_top_paths()
                     data_obtained = True
                 except Exception as e:
                     print(e)
                     time.sleep(0.1)
                     print("attempting retry for",repo.full_name)
+
+                # append to data if all requests were successful
+
+                # append stars and forks
+                stargazers.append(stargazers_count)
+                forks.append(forks_count)
+
+                # append clones data
+                clones_2weeks.append(clones_2weeks_data)
+                clones_uniques_2weeks.append(clones_uniques_2weeks_data)
+                for clone in clone_data:
+                    if clone.timestamp.date() in last_dates:
+                        clones_daily[rr][str(clone.timestamp.date())] = clone.count
+                        clones_uniques_daily[rr][str(clone.timestamp.date())] = clone.uniques
+
+                # append views data
+                views_2weeks.append(views_2weeks_data)
+                views_uniques_2weeks.append(views_uniques_2weeks_data)
+                for view in view_data:
+                    if view.timestamp.date() in last_dates:
+                        views_daily[rr][str(view.timestamp.date())] = view.count
+                        views_uniques_daily[rr][str(view.timestamp.date())] = view.uniques
+
+                # append referrers and top paths
+                referrers_top_10.append(referrers_top_10_data)
+                content_top_10.append(content_top_10_data)
 
 
         self.df["stars"] = stargazers
