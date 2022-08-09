@@ -5,34 +5,35 @@
 # Desc:         Sends emails with updates on analytics
 #######################################################################
 
+import sys
 import json
 import pickle
 import base64
 import os.path
-import httplib2
-import mimetypes
 import configparser
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-from apiclient import errors, discovery
+from apiclient import errors
 from googleapiclient.discovery import build
 from email.mime.multipart import MIMEMultipart
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 if __name__ == "__main__":
-    import plotter as libplotter
+    from plotter import Plotter
 else:
-    import lib.plotter as libplotter
+    from lib.plotter import Plotter
 
 class EmailSender():
-    def __init__(self,config,verbose=False):
+    def __init__(self,config,prefix,verbose=False):
         """email sender initialization
 
         Parameters
         ----------
         config : configparser file
             configuration file
+        prefix : string
+            name for log file
         verbose : bool
             print verbose debugging statements
 
@@ -46,10 +47,12 @@ class EmailSender():
         # create some file paths
         self.token_path = file_dir + "/../config/email_token.pickle"
         self.cred_path = file_dir + "/../config/credentials.json"
-        self.an_path = file_dir + "/../log/analytics/"
+        self.an_path = os.path.join(file_dir,"..","log",prefix,"analytics")
 
         # build service
         self.service = self.build_service()
+
+        self.plotter = Plotter(prefix)
 
     def run(self):
         """main run function for the email sender
@@ -75,7 +78,7 @@ class EmailSender():
             self.date_prev = an_dirs[-2]
         # get the date for the analytics folder and path to it
         self.date_cur = an_dirs[-1]
-        self.an_dir = self.an_path + an_dirs[-1]
+        self.an_dir = os.path.join(self.an_path,an_dirs[-1])
 
         # prep the attachments to be added to the message
         if self.verbose:
@@ -152,7 +155,7 @@ class EmailSender():
 
         """
         # read in the analytics text data
-        with open(self.an_dir + "/" + self.date_cur + ".json") as f:
+        with open(os.path.join(self.an_dir,self.date_cur + ".json")) as f:
             data = json.load(f)
 
         began_tracking = data["began_tracking"]
@@ -256,8 +259,8 @@ class EmailSender():
         the figures that were created
 
         """
-        self.fig_paths = libplotter.create_email_plots(self.date_cur,
-                                                       self.date_prev)
+        self.fig_paths = self.plotter.create_email_plots(self.date_cur,
+                                                         self.date_prev)
         self.fig_names = ["clones_daily","views_daily",
                           "clones_unique","views_unique",
                           "views_history"]
@@ -355,7 +358,7 @@ if __name__ == "__main__":
     # funky method but it works regardless of whether you're running
     # this file or the main.py file
     file_dir = os.path.dirname(os.path.realpath(__file__))
-    config.read(file_dir + "/../config/settings.ini")
+    config.read(file_dir + "/../config/settings_standard.ini")
 
-    es = EmailSender(config,True)
+    es = EmailSender(config,"settings_standard",True)
     es.run()

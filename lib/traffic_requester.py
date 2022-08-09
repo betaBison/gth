@@ -7,6 +7,7 @@
 
 import os
 import sys
+import ast
 import time
 import datetime
 import configparser
@@ -14,13 +15,15 @@ import pandas as pd
 from github import Github
 
 class TrafficRequester():
-    def __init__(self,config,verbose=False):
+    def __init__(self, config, prefix="settings_standard", verbose=False):
         """traffic requester initialization
 
         Parameters
         ----------
         config : configparser file
             configuration file
+        prefix : string
+            name for log file
         verbose : bool
             print verbose debugging statements
 
@@ -28,9 +31,22 @@ class TrafficRequester():
 
         self.verbose = verbose              # lots of print statements
         self.config = config                # config file
+        self.prefix = prefix
 
         # authorization code from github oauth
         oauth_token = self.config["authorization"]["oauth"]
+
+        # repository types to track
+        self.repo_types = ast.literal_eval(self.config["traffic_requester"]["repo_types"])
+        # conform to lower case just to be sure
+        self.repo_types = [x.lower() for x in self.repo_types]
+
+        # organizations to pull from
+        self.repo_organizations = ast.literal_eval(self.config["traffic_requester"]["repo_organizations"])
+        # conform to lower case just to be sure
+        self.repo_organizations = [x.lower() for x in self.repo_organizations]
+
+
 
         # number of previous days for which to get view and clone data
         # default (and max) is 14. Changing to a lower number will
@@ -84,16 +100,23 @@ class TrafficRequester():
         contributor_count = 0
 
         for repo in self.g.get_user().get_repos("all"):
-            if repo.owner.login == self.user:
+            if repo.full_name.split("/")[0].lower() not in self.repo_organizations and "all" not in self.repo_organizations:
+                continue
+
+            if "all" in self.repo_types:
+                self.repo_objects.append(repo)
+                repo_names.append(repo.full_name)
+            elif "owner" in self.repo_types and repo.owner.login == self.user:
                 self.repo_objects.append(repo)
                 repo_names.append(repo.full_name)
                 owner_count += 1
-            else:
+            elif "contributor" in self.repo_types:
                 for contributor in repo.get_contributors():
                     if contributor.login == self.user:
                         self.repo_objects.append(repo)
                         repo_names.append(repo.full_name)
                         contributor_count += 1
+
         self.df["repo"] = repo_names
         if self.verbose:
             print("found ",owner_count," owned repositories")
@@ -220,36 +243,30 @@ class TrafficRequester():
         # this file or the main.py file
         file_dir = os.path.dirname(os.path.realpath(__file__))
         log_dir = file_dir + "/../log/"
-        raw_dir = log_dir + "raw/"
+        prefix_dir = os.path.join(log_dir,self.prefix)
+        raw_dir = os.path.join(prefix_dir,"raw")
 
-        # create log directory if it doesn't yet exist
-        if not os.path.isdir(log_dir):
-            try:
-                os.makedirs(log_dir)
-            except OSError as e:
-                print("e: ",e)
-                sys.exit(1)
-
-        # create raw data directory if it doesn't yet exist
-        if not os.path.isdir(raw_dir):
-            try:
-                os.makedirs(raw_dir)
-            except OSError as e:
-                print("e: ",e)
-                sys.exit(1)
+        # create directories if they don't yet exist
+        for dir in [log_dir, prefix_dir, raw_dir]:
+            if not os.path.isdir(dir):
+                try:
+                    os.makedirs(dir)
+                except OSError as e:
+                    print("e: ",e)
+                    sys.exit(1)
 
         # record raw data as date of last saved information
         date_today = datetime.datetime.utcnow().date()
         last_date = date_today - datetime.timedelta(days=1)
         last_date = str(last_date)
-        self.df.to_csv(raw_dir + last_date + ".csv",index=False)
+        self.df.to_csv(os.path.join(raw_dir,last_date + ".csv"),index=False)
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
     # funky method but it works regardless of whether you're running
     # this file or the main.py file
     file_dir = os.path.dirname(os.path.realpath(__file__))
-    config.read(file_dir + "/../config/settings.ini")
+    config.read(file_dir + "/../config/settings_standard.ini")
 
-    tr = TrafficRequester(config,True)
+    tr = TrafficRequester(config,"settings_standard",True)
     tr.run()

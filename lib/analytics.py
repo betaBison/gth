@@ -11,18 +11,15 @@ import ast
 import json
 import datetime
 import pandas as pd
-if __name__ == "__main__":
-    import plotter as libplotter
-else:
-    import lib.plotter as libplotter
-
 
 class Analytics():
-    def __init__(self,verbose=False):
+    def __init__(self, prefix="settings_standard", verbose=False):
         """analytics initialization
 
         Parameters
         ----------
+        prefix : string
+            name for log file
         verbose : bool
             print verbose debugging statements
 
@@ -32,7 +29,7 @@ class Analytics():
         # funky method but it works regardless of whether you're running
         # this file or the main.py file
         file_dir = os.path.dirname(os.path.realpath(__file__))
-        self.log_dir = file_dir + "/../log/"
+        self.log_dir = os.path.join(file_dir,"..","log",prefix)
 
         self.prev_exists = False    # exists a previous log to compare
 
@@ -104,8 +101,8 @@ class Analytics():
 
         """
 
-        raw_dir = self.log_dir + "raw/"
-        an_dir = self.log_dir + "analytics/"
+        raw_dir = os.path.join(self.log_dir,"raw")
+        an_dir = os.path.join(self.log_dir,"analytics")
 
         if not os.path.isdir(raw_dir):
             print("no raw log directory," \
@@ -171,15 +168,15 @@ class Analytics():
         """load_log file into dataframe
 
         """
-        raw_dir = self.log_dir + "raw/"
+        raw_dir = os.path.join(self.log_dir,"raw")
 
-        self.log_df = pd.read_csv(raw_dir + self.raw_log_current)
+        self.log_df = pd.read_csv(os.path.join(raw_dir,self.raw_log_current))
 
     def create_repo_dirs(self):
         """create log directories if they don't yet exist
 
         """
-        repos_dir = self.log_dir + "repos/"
+        repos_dir = os.path.join(self.log_dir,"repos")
 
         # create repos data directory if it doesn't yet exist
         if not os.path.isdir(repos_dir):
@@ -191,7 +188,7 @@ class Analytics():
 
         # create individual repo directoroy if it doesn't yet exist
         for repo in self.log_df["repo"]:
-            repo_dir = repos_dir + self.full2dir(repo) + "/"
+            repo_dir = os.path.join(repos_dir,self.full2dir(repo))
             if not os.path.isdir(repo_dir):
                 try:
                     os.makedirs(repo_dir)
@@ -233,9 +230,9 @@ class Analytics():
             column name and thus file name for the specific metric
 
         """
-        repos_dir = self.log_dir + "repos/"
-        repo_dir = repos_dir + self.full2dir(self.log_df["repo"][ri])
-        file_path = repo_dir + "/" + col_name + ".csv"
+        repos_dir = os.path.join(self.log_dir,"repos")
+        repo_dir = os.path.join(repos_dir,self.full2dir(self.log_df["repo"][ri]))
+        file_path = os.path.join(repo_dir,col_name + ".csv")
 
         # the nondaily metrics just get added to their respective log
         if not os.path.exists(file_path):
@@ -261,9 +258,9 @@ class Analytics():
             column name and thus file name for the specific metric
 
         """
-        repos_dir = self.log_dir + "repos/"
-        repo_dir = repos_dir + self.full2dir(self.log_df["repo"][ri])
-        file_path = repo_dir + "/" + col_name + ".csv"
+        repos_dir = os.path.join(self.log_dir,"repos")
+        repo_dir = os.path.join(repos_dir,self.full2dir(self.log_df["repo"][ri]))
+        file_path = os.path.join(repo_dir, col_name + ".csv")
 
         # organize most current data
         data_cur_dict = ast.literal_eval(self.log_df[col_name][ri])
@@ -387,7 +384,7 @@ class Analytics():
         """Logs the analytics to a json file
 
         """
-        an_dir = self.log_dir + "analytics/" + self.raw_log_current[:-4] + "/"
+        an_dir = os.path.join(self.log_dir,"analytics",self.raw_log_current[:-4])
 
         # create analytics directory if it doesn't yet exist
         if not os.path.isdir(an_dir):
@@ -405,12 +402,12 @@ class Analytics():
 
         # write analytics dictionary to file
         json_data = json.dumps(analytics_dict)
-        f = open(an_dir+self.raw_log_current[:-4]+".json","w")
+        f = open(os.path.join(an_dir,self.raw_log_current[:-4]+".json"),"w")
         f.write(json_data)
         f.close()
 
 if __name__ == "__main__":
     verbose = True
 
-    an = Analytics(verbose)
+    an = Analytics("settings_standard",verbose)
     an.run()
